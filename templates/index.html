@@ -2,82 +2,22 @@
 
 {% block title %}NLCF 45th Annual Reunion - Feedback Form{% endblock %}
 
-{% block extra_head %}
-<style>
-    .hero-section {
-        min-height: calc(100vh - var(--nav-height) - 160px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 0;
-    }
-    .hero-logo {
-        width: 130px; height: 130px;
-        border-radius: 50%;
-        object-fit: cover;
-        box-shadow: 0 0 0 4px white, 0 0 40px rgba(85,107,47,0.2);
-        margin-bottom: 24px;
-        animation: scaleIn 0.6s ease;
-    }
-    .hero-divider {
-        width: 60px;
-        height: 3px;
-        background: linear-gradient(90deg, var(--accent), var(--secondary));
-        border-radius: 2px;
-        margin: 16px auto;
-    }
-    .verse-text {
-        font-size: 1rem;
-        color: var(--text-light);
-        font-style: italic;
-        position: relative;
-        display: inline-block;
-    }
-    .verse-text::before {
-        content: '\201C';
-        font-size: 2.5rem;
-        color: var(--accent);
-        opacity: 0.3;
-        position: absolute;
-        top: -18px;
-        left: -20px;
-        font-family: Georgia, serif;
-    }
-    .verse-text::after {
-        content: '\201D';
-        font-size: 2.5rem;
-        color: var(--accent);
-        opacity: 0.3;
-        position: absolute;
-        bottom: -32px;
-        right: -20px;
-        font-family: Georgia, serif;
-    }
-    @media (max-width: 576px) {
-        .hero-logo { width: 100px; height: 100px; }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="hero-section">
-    <div class="col-lg-8 text-center">
-        <img src="{{ url_for('static', filename='img/Logo.jpg') }}" alt="NLCF Logo" class="hero-logo">
-
-        <p class="text-uppercase small fw-bold text-muted mb-2 animate-up" style="letter-spacing: 0.15em;animation-delay:0.1s">You are cordially invited to</p>
-        <h1 class="display-4 fw-bold mb-2 animate-up" style="animation-delay:0.15s">NLCF 45th Annual Reunion</h1>
-        <p class="text-gradient display-6 fw-bold mb-3 animate-up" style="animation-delay:0.2s">&amp; Church Anniversary</p>
-        <div class="hero-divider animate-up" style="animation-delay:0.25s"></div>
-        <p class="lead text-muted mb-3 animate-up" style="animation-delay:0.25s">Honoring our Past, Celebrating our Present, Inspiring our Future</p>
-        <p class="text-muted mb-5 animate-up" style="max-width: 520px; margin: 0 auto; animation-delay:0.3s">Your feedback helps us improve future church events and better serve our church family.</p>
-
-        <div class="animate-up" style="animation-delay:0.35s">
-            <a href="{{ url_for('feedback') }}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg">
-                <i class="bi bi-pencil-square me-2"></i>Give Feedback
-            </a>
+<div class="row justify-content-center animate-up">
+    <div class="col-lg-8 text-center" style="padding: 80px 0;">
+        <div class="mb-4">
+            <img src="{{ url_for('static', filename='img/Logo.jpg') }}" alt="NLCF Logo" style="width: 120px; height: 120px; border-radius: 20px; box-shadow: var(--shadow-lg);">
         </div>
-
-        <p class="mt-5 verse-text animate-up" style="animation-delay:0.4s">&ldquo;To God be all the glory!&rdquo;</p>
+        <h1 class="display-4 fw-bold mb-3">NLCF 45th Annual Reunion</h1>
+        <p class="text-gradient display-6 fw-bold mb-3">&amp; Church Anniversary</p>
+        <p class="lead text-muted mb-4" style="font-size: 1.2rem;">Honoring our Past, Celebrating our Present, Inspiring our Future</p>
+        <p class="text-muted mb-5" style="max-width: 600px; margin: 0 auto;">Your feedback helps us improve future church events and better serve our church family.</p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{{ url_for('feedback') }}" class="btn btn-primary btn-lg px-5 py-3">
+                    <i class="bi bi-pencil-square me-2"></i>Give Feedback
+                </a>
+            </div>
+        <p class="mt-5 text-muted fst-italic" style="font-size: 1rem;">&ldquo;To God be all the glory!&rdquo;</p>
     </div>
 </div>
 {% endblock %}
