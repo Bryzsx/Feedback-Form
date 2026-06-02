@@ -12,110 +12,140 @@
     .feedback-header {
         background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
         border-radius: var(--radius-lg);
-        padding: 40px;
+        padding: 32px 24px;
         color: white;
         margin-bottom: 40px;
         box-shadow: var(--shadow-xl);
         text-align: center;
     }
-    .feedback-header h1 { color: white; margin-bottom: 8px; }
-    .feedback-header p { opacity: 0.85; font-weight: 500; margin-bottom: 0; }
+    .feedback-header h1 { color: white; margin-bottom: 8px; font-size: clamp(1.3rem, 5vw, 2.5rem); }
+    .feedback-header .subtitle { opacity: 1; color: white; font-size: clamp(0.85rem, 2.5vw, 1rem); font-weight: 400; }
+    .feedback-header p { opacity: 1; color: white; font-weight: 600; margin-bottom: 0; font-size: clamp(0.9rem, 2.5vw, 1.05rem); }
     .form-section {
         background: white;
         border-radius: var(--radius-lg);
-        padding: 32px;
-        margin-bottom: 24px;
+        padding: clamp(20px, 4vw, 32px);
+        margin-bottom: 20px;
         box-shadow: var(--shadow-md);
         border: 1px solid rgba(0,0,0,0.04);
+        position: relative;
+    }
+    .form-section::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 24px; right: 24px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--secondary), var(--accent));
+        border-radius: 0 0 3px 3px;
+        opacity: 0.5;
     }
     .form-section h4 {
         color: var(--accent);
         font-weight: 700;
-        margin-bottom: 24px;
-        padding-bottom: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
         border-bottom: 2px solid #f1f5f9;
         display: flex;
         align-items: center;
         gap: 10px;
+        font-size: clamp(1rem, 4vw, 1.3rem);
     }
 
-    /* ---- Rating Grid ---- */
-    .rating-grid {
-        display: grid;
-        grid-template-columns: 1fr repeat(4, 1fr);
-        gap: 0;
-        border: 1px solid #e2e8f0;
-        border-radius: var(--radius-md);
-        overflow: hidden;
+    /* ---- Rating Rows (mobile-first) ---- */
+    .rating-row {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 14px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        background: white;
     }
-    .rating-grid .header-cell {
-        background: #f8fafc;
+    .rating-row:last-child { border-bottom: none; }
+    .rating-row .rating-label {
         font-weight: 600;
-        padding: 14px 16px;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--text-muted);
-        border-bottom: 2px solid #e2e8f0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 48px;
-    }
-    .rating-grid .header-cell:first-child {
-        justify-content: flex-start;
-    }
-    .rating-grid .label-cell {
-        padding: 14px 16px;
-        font-weight: 500;
         font-size: 0.9rem;
-        border-bottom: 1px solid #f1f5f9;
-        background: white;
-        display: flex;
-        align-items: center;
-        min-height: 52px;
+        color: var(--text-main);
     }
-    .rating-grid .radio-cell {
-        text-align: center;
-        padding: 0;
-        border-bottom: 1px solid #f1f5f9;
-        background: white;
+    .rating-row .rating-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .rating-row .rating-option {
+        flex: 1 0 auto;
+        min-width: 0;
+    }
+    .rating-row .rating-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+    .rating-row .rating-option label {
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 52px;
-    }
-    .rating-grid .radio-cell:hover { background: #f8fafc; }
-
-    /* Custom circle radio for rating grid */
-    .rating-grid .radio-cell input[type="radio"] {
-        appearance: none;
-        -webkit-appearance: none;
-        width: var(--radio-size);
-        height: var(--radio-size);
-        border: 2px solid var(--radio-border);
-        border-radius: 50%;
+        gap: 6px;
+        padding: 10px 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 100px;
         cursor: pointer;
         transition: all 0.2s ease;
-        position: relative;
+        font-weight: 500;
+        font-size: 0.82rem;
+        color: var(--text-main);
         background: white;
+        user-select: none;
+        text-align: center;
+    }
+    .rating-row .rating-option label::before {
+        content: '';
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--radio-border);
+        border-radius: 50%;
         flex-shrink: 0;
+        transition: all 0.2s ease;
+        display: inline-block;
     }
-    .rating-grid .radio-cell input[type="radio"]:hover {
+    .rating-row .rating-option label:hover {
         border-color: var(--accent);
-        box-shadow: 0 0 0 4px var(--accent-glow);
+        background: rgba(85, 107, 47, 0.04);
     }
-    .rating-grid .radio-cell input[type="radio"]:checked {
+    .rating-row .rating-option label:hover::before { border-color: var(--accent); }
+    .rating-row .rating-option input[type="radio"]:checked + label {
+        border-color: var(--accent);
+        background: rgba(85, 107, 47, 0.07);
+        color: var(--accent);
+        font-weight: 600;
+    }
+    .rating-row .rating-option input[type="radio"]:checked + label::before {
         border-color: var(--accent);
         border-width: 6px;
-        background: white;
     }
-    .rating-grid .radio-cell input[type="radio"]:checked:hover {
-        box-shadow: 0 0 0 4px var(--accent-glow);
-    }
-    .rating-grid .label-cell:last-of-type,
-    .rating-grid .radio-cell:last-of-type {
-        border-bottom: none;
+    @media (min-width: 768px) {
+        .rating-row {
+            flex-direction: row;
+            align-items: center;
+            gap: 16px;
+        }
+        .rating-row .rating-label {
+            width: 200px;
+            flex-shrink: 0;
+        }
+        .rating-row .rating-options {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+        }
+        .rating-row .rating-option {
+            flex: 1;
+        }
+        .rating-row .rating-option label {
+            font-size: 0.85rem;
+            padding: 10px 16px;
+        }
     }
 
     /* ---- Radio Group (pill buttons) ---- */
@@ -182,24 +212,31 @@
     }
 
     .other-input { margin-top: 10px; padding-left: 12px; }
+    .text-danger { color: var(--danger) !important; font-weight: 700; }
 
     /* ---- Responsive tweaks ---- */
     @media (max-width: 576px) {
-        .rating-grid {
-            grid-template-columns: 1fr repeat(4, 1fr);
-            font-size: 0.8rem;
-        }
-        .rating-grid .header-cell {
-            padding: 10px 8px;
-            font-size: 0.65rem;
-        }
-        .rating-grid .label-cell {
-            padding: 12px 10px;
-            font-size: 0.82rem;
-        }
+        .feedback-header { padding: 24px 16px; border-radius: var(--radius-md); }
+        .form-section { border-radius: var(--radius-md); padding: 18px; }
+        .radio-group { gap: 8px; }
+        .radio-group .form-check { min-width: 0; flex: 1 1 auto; }
         .radio-group .form-check label {
-            padding: 8px 14px;
-            font-size: 0.82rem;
+            padding: 8px 12px;
+            font-size: 0.78rem;
+            gap: 4px;
+        }
+        .radio-group .form-check label::before {
+            width: 14px; height: 14px;
+        }
+        .rating-row { padding: 12px 14px; gap: 6px; }
+        .rating-row .rating-label { font-size: 0.82rem; }
+        .rating-row .rating-option label {
+            padding: 8px 10px;
+            font-size: 0.72rem;
+            gap: 4px;
+        }
+        .rating-row .rating-option label::before {
+            width: 14px; height: 14px;
         }
     }
 </style>
@@ -207,12 +244,13 @@
 
 {% block content %}
 <div class="feedback-header animate-up">
-    <h1 class="display-5 fw-bold">NLCF 45th Annual Reunion & Church Anniversary</h1>
+    <h1 class="fw-bold">NLCF 45th Annual Reunion<br class="d-sm-none"> &amp; Church Anniversary</h1>
     <p class="mb-0">Participant Feedback Form</p>
-    <p class="mt-2 mb-0" style="opacity: 0.7; font-size: 0.9rem;">Thank you for attending our celebration! Your feedback will help us improve future church events and better serve our church family.</p>
+    <p class="mt-2 mb-0 subtitle">Thank you for attending our celebration! Your feedback will help us improve future church events and better serve our church family.</p>
 </div>
 
 <form method="POST" action="{{ url_for('feedback') }}" class="animate-up" style="animation-delay: 0.1s">
+    <div class="text-end mb-3 small text-muted"><span class="text-danger">*</span> Required fields</div>
     <div class="form-section">
         <h4><i class="bi bi-person me-2"></i>Basic Information</h4>
         <div class="row g-4">
@@ -225,25 +263,25 @@
                 <input type="text" class="form-control" name="church_location" placeholder="Your church or location" value="{{ data.get('church_location', '') }}">
             </div>
             <div class="col-md-6">
-                <label class="form-label">Age Group</label>
+                <label class="form-label">Age Group <span class="text-danger">*</span></label>
                 <div class="radio-group">
                     {% for option in ['Below 18', '18-30', '31-45', '46-60', '61 and above'] %}
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="age_group" value="{{ option }}" id="age_{{ loop.index }}" {% if data.get('age_group') == option %}checked{% endif %}>
+                        <input class="form-check-input" type="radio" name="age_group" value="{{ option }}" id="age_{{ loop.index }}" {% if data.get('age_group') == option %}checked{% endif %} required>
                         <label class="form-check-label" for="age_{{ loop.index }}">{{ option }}</label>
                     </div>
                     {% endfor %}
                 </div>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Is this your first time attending an NLCF Anniversary/Reunion?</label>
+                <label class="form-label">Is this your first time attending an NLCF Anniversary/Reunion? <span class="text-danger">*</span></label>
                 <div class="radio-group">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="first_time_attending" value="Yes" id="first_yes" {% if data.get('first_time_attending') == 'Yes' %}checked{% endif %}>
+                        <input class="form-check-input" type="radio" name="first_time_attending" value="Yes" id="first_yes" {% if data.get('first_time_attending') == 'Yes' %}checked{% endif %} required>
                         <label class="form-check-label" for="first_yes">Yes</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="first_time_attending" value="No" id="first_no" {% if data.get('first_time_attending') == 'No' %}checked{% endif %}>
+                        <input class="form-check-input" type="radio" name="first_time_attending" value="No" id="first_no" {% if data.get('first_time_attending') == 'No' %}checked{% endif %} required>
                         <label class="form-check-label" for="first_no">No</label>
                     </div>
                 </div>
@@ -253,13 +291,8 @@
 
     <div class="form-section">
         <h4><i class="bi bi-star me-2"></i>Event Evaluation</h4>
-        <p class="text-muted mb-4">Please rate the following:</p>
-        <div class="rating-grid">
-            <div class="header-cell">Area</div>
-            <div class="header-cell">Excellent</div>
-            <div class="header-cell">Good</div>
-            <div class="header-cell">Fair</div>
-            <div class="header-cell">Poor</div>
+        <p class="text-muted mb-4">Please rate the following: <span class="text-danger">*</span></p>
+        <div class="border rounded-3 overflow-hidden">
             {% set ratings = [
                 ('rating_registration', 'Registration Process'),
                 ('rating_venue', 'Venue & Facilities'),
@@ -273,12 +306,17 @@
                 ('rating_overall', 'Overall Experience')
             ] %}
             {% for field, label in ratings %}
-            <div class="label-cell">{{ label }}</div>
-            {% for val in ['Excellent', 'Good', 'Fair', 'Poor'] %}
-            <div class="radio-cell">
-                <input type="radio" name="{{ field }}" value="{{ val }}" {% if data.get(field) == val %}checked{% endif %}>
+            <div class="rating-row">
+                <div class="rating-label">{{ label }}</div>
+                <div class="rating-options">
+                    {% for val in ['Excellent', 'Good', 'Fair', 'Poor'] %}
+                    <div class="rating-option">
+                        <input type="radio" name="{{ field }}" value="{{ val }}" id="{{ field }}_{{ loop.index }}" {% if data.get(field) == val %}checked{% endif %} required>
+                        <label for="{{ field }}_{{ loop.index }}">{{ val }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-            {% endfor %}
             {% endfor %}
         </div>
     </div>
@@ -286,16 +324,16 @@
     <div class="form-section">
         <h4><i class="bi bi-chat-quote me-2"></i>Program Feedback</h4>
         <div class="mb-4">
-            <label class="form-label">1. Which part of the program impacted you the most?</label>
+            <label class="form-label">1. Which part of the program impacted you the most? <span class="text-danger">*</span></label>
             <div class="radio-group">
                 {% for option in ['Praise & Worship', 'Testimonies', 'Anniversary Celebration', 'Reunion Fellowship', 'Graduation Ceremony', 'Main Message', 'Special Presentations'] %}
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="most_impactful_part" value="{{ option }}" id="impact_{{ loop.index }}" {% if data.get('most_impactful_part') == option %}checked{% endif %}>
+                    <input class="form-check-input" type="radio" name="most_impactful_part" value="{{ option }}" id="impact_{{ loop.index }}" {% if data.get('most_impactful_part') == option %}checked{% endif %} required>
                     <label class="form-check-label" for="impact_{{ loop.index }}">{{ option }}</label>
                 </div>
                 {% endfor %}
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="most_impactful_part" value="Other" id="impact_other" {% if data.get('most_impactful_part') == 'Other' %}checked{% endif %}>
+                    <input class="form-check-input" type="radio" name="most_impactful_part" value="Other" id="impact_other" {% if data.get('most_impactful_part') == 'Other' %}checked{% endif %} required>
                     <label class="form-check-label" for="impact_other">Other</label>
                 </div>
             </div>
@@ -312,11 +350,11 @@
             <textarea class="form-control" name="areas_for_improvement" rows="3" placeholder="Your suggestions...">{{ data.get('areas_for_improvement', '') }}</textarea>
         </div>
         <div>
-            <label class="form-label">4. Were the event announcements and instructions clear?</label>
+            <label class="form-label">4. Were the event announcements and instructions clear? <span class="text-danger">*</span></label>
             <div class="radio-group">
                 {% for option in ['Very Clear', 'Clear', 'Somewhat Clear', 'Not Clear'] %}
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="announcements_clarity" value="{{ option }}" id="clarity_{{ loop.index }}" {% if data.get('announcements_clarity') == option %}checked{% endif %}>
+                    <input class="form-check-input" type="radio" name="announcements_clarity" value="{{ option }}" id="clarity_{{ loop.index }}" {% if data.get('announcements_clarity') == option %}checked{% endif %} required>
                     <label class="form-check-label" for="clarity_{{ loop.index }}">{{ option }}</label>
                 </div>
                 {% endfor %}
@@ -327,11 +365,11 @@
     <div class="form-section">
         <h4><i class="bi bi-heart me-2"></i>Spiritual Impact</h4>
         <div class="mb-4">
-            <label class="form-label">1. Did this event strengthen your faith and relationship with God?</label>
+            <label class="form-label">1. Did this event strengthen your faith and relationship with God? <span class="text-danger">*</span></label>
             <div class="radio-group">
                 {% for option in ['Strongly Agree', 'Agree', 'Neutral', 'Disagree'] %}
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="faith_strengthened" value="{{ option }}" id="faith_{{ loop.index }}" {% if data.get('faith_strengthened') == option %}checked{% endif %}>
+                    <input class="form-check-input" type="radio" name="faith_strengthened" value="{{ option }}" id="faith_{{ loop.index }}" {% if data.get('faith_strengthened') == option %}checked{% endif %} required>
                     <label class="form-check-label" for="faith_{{ loop.index }}">{{ option }}</label>
                 </div>
                 {% endfor %}
@@ -342,11 +380,11 @@
             <textarea class="form-control" name="spiritual_lesson" rows="3" placeholder="Share what God spoke to your heart...">{{ data.get('spiritual_lesson', '') }}</textarea>
         </div>
         <div>
-            <label class="form-label">3. Do you feel more connected to the NLCF family after attending?</label>
+            <label class="form-label">3. Do you feel more connected to the NLCF family after attending? <span class="text-danger">*</span></label>
             <div class="radio-group">
                 {% for option in ['Yes', 'Somewhat', 'No'] %}
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="connected_to_nlcf" value="{{ option }}" id="connect_{{ loop.index }}" {% if data.get('connected_to_nlcf') == option %}checked{% endif %}>
+                    <input class="form-check-input" type="radio" name="connected_to_nlcf" value="{{ option }}" id="connect_{{ loop.index }}" {% if data.get('connected_to_nlcf') == option %}checked{% endif %} required>
                     <label class="form-check-label" for="connect_{{ loop.index }}">{{ option }}</label>
                 </div>
                 {% endfor %}
@@ -357,11 +395,11 @@
     <div class="form-section">
         <h4><i class="bi bi-calendar-event me-2"></i>Future Events</h4>
         <div class="mb-4">
-            <label class="form-label">1. Would you attend future NLCF Anniversary/Reunion events?</label>
+            <label class="form-label">1. Would you attend future NLCF Anniversary/Reunion events? <span class="text-danger">*</span></label>
             <div class="radio-group">
                 {% for option in ['Definitely', 'Probably', 'Not Sure', 'No'] %}
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="attend_future" value="{{ option }}" id="future_{{ loop.index }}" {% if data.get('attend_future') == option %}checked{% endif %}>
+                    <input class="form-check-input" type="radio" name="attend_future" value="{{ option }}" id="future_{{ loop.index }}" {% if data.get('attend_future') == option %}checked{% endif %} required>
                     <label class="form-check-label" for="future_{{ loop.index }}">{{ option }}</label>
                 </div>
                 {% endfor %}
@@ -385,10 +423,13 @@
     </div>
 
     <div class="text-center mb-5 animate-up" style="animation-delay: 0.3s">
-        <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
-            <i class="bi bi-send me-2"></i>Submit Feedback
-        </button>
-        <p class="text-muted mt-3 small">"To God be all the glory!"</p>
+        <div class="card border-0 shadow-lg p-4 p-md-5 mb-4" style="background: linear-gradient(135deg, #fafbfc 0%, white 100%);">
+            <p class="text-muted mb-4" style="max-width: 500px; margin: 0 auto;">Before you submit, please review your responses. Every feedback helps us create better experiences for our church family.</p>
+            <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg" style="font-size: 1.05rem;">
+                <i class="bi bi-send me-2"></i>Submit Feedback
+            </button>
+        </div>
+        <p class="text-muted fst-italic" style="font-size: 0.95rem;">&ldquo;To God be all the glory!&rdquo;</p>
     </div>
 </form>
 {% endblock %}

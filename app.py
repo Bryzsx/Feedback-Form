@@ -38,7 +38,7 @@ if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
     }
 
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'nlcf_login'
 login_manager.login_message_category = 'info'
 
 
@@ -95,10 +95,46 @@ def index():
     return render_template('index.html')
 
 
+REQUIRED_FIELDS = [
+    'age_group', 'first_time_attending',
+    'rating_registration', 'rating_venue', 'rating_program_flow', 'rating_av',
+    'rating_worship', 'rating_speakers', 'rating_fellowship', 'rating_food',
+    'rating_organization', 'rating_overall',
+    'most_impactful_part', 'announcements_clarity',
+    'faith_strengthened', 'connected_to_nlcf', 'attend_future'
+]
+
+REQUIRED_LABELS = {
+    'age_group': 'Age Group',
+    'first_time_attending': 'First time attending?',
+    'rating_registration': 'Rating: Registration',
+    'rating_venue': 'Rating: Venue & Facilities',
+    'rating_program_flow': 'Rating: Program Flow',
+    'rating_av': 'Rating: Audio & Visual',
+    'rating_worship': 'Rating: Praise & Worship',
+    'rating_speakers': 'Rating: Messages/Speakers',
+    'rating_fellowship': 'Rating: Fellowship',
+    'rating_food': 'Rating: Food & Refreshments',
+    'rating_organization': 'Rating: Organization',
+    'rating_overall': 'Rating: Overall Experience',
+    'most_impactful_part': 'Most impactful part',
+    'announcements_clarity': 'Announcements clarity',
+    'faith_strengthened': 'Faith strengthened',
+    'connected_to_nlcf': 'Connected to NLCF',
+    'attend_future': 'Attend future events'
+}
+
+
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
     if request.method == 'POST':
         data = request.form
+
+        missing = [REQUIRED_LABELS[f] for f in REQUIRED_FIELDS if not data.get(f, '').strip()]
+        if missing:
+            flash(f'Please fill in all required fields: {", ".join(missing)}.', 'danger')
+            return render_template('feedback.html', data=data)
+
         feedback_entry = Feedback(
             name=data.get('name', '').strip(),
             church_location=data.get('church_location', '').strip(),
@@ -141,7 +177,7 @@ def feedback():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def nlcf_login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -156,12 +192,12 @@ def login():
 
 @app.route('/logout')
 @login_required
-def logout():
+def nlcf_logout():
     logout_user()
     return redirect(url_for('index'))
 
 
-@app.route('/admin')
+@app.route('/nlcfadmin.SystemAdmin')
 @login_required
 def admin():
     page = request.args.get('page', 1, type=int)
@@ -234,7 +270,7 @@ def admin():
                            pagination=pagination)
 
 
-@app.route('/admin/feedback/<int:id>')
+@app.route('/nlcfadmin.SystemAdmin/feedback/<int:id>')
 @login_required
 def get_feedback(id):
     fb = db.session.get(Feedback, id)
@@ -269,7 +305,7 @@ def get_feedback(id):
     })
 
 
-@app.route('/admin/feedback/<int:id>/delete', methods=['POST'])
+@app.route('/nlcfadmin.SystemAdmin/feedback/<int:id>/delete', methods=['POST'])
 @login_required
 def delete_feedback(id):
     try:
@@ -374,13 +410,15 @@ def init_database():
 
         db.create_all()
 
-        if not Admin.query.filter_by(username='admin').first():
-            default_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
-            admin = Admin(username='admin')
+        old = Admin.query.filter_by(username='admin').first()
+        if old:
+            db.session.delete(old)
+
+        if not Admin.query.filter_by(username='SystemAdmin').first():
+            default_password = os.environ.get('ADMIN_PASSWORD', 'nlcfadmin2026')
+            admin = Admin(username='SystemAdmin')
             admin.set_password(default_password)
             db.session.add(admin)
-            if default_password == 'admin123':
-                logging.warning('Default admin password in use. Set ADMIN_PASSWORD env var in production.')
 
         db.session.commit()
 

@@ -4,42 +4,78 @@
 
 {% block extra_head %}
 <style>
+    .login-wrapper {
+        min-height: calc(100vh - var(--nav-height) - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
     .login-card {
+        width: 100%;
         max-width: 420px;
-        margin: 60px auto;
+    }
+    .login-card .card {
+        border-radius: var(--radius-lg);
+        overflow: hidden;
     }
     .login-accent {
         height: 4px;
         background: linear-gradient(90deg, var(--accent), var(--secondary));
-        border-radius: 0 0 4px 4px;
+    }
+    .login-icon {
+        width: 56px; height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto 16px;
+        box-shadow: 0 4px 15px rgba(85,107,47,0.25);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="login-card animate-up">
-    <div class="card border-0 shadow-lg">
-        <div class="login-accent"></div>
-        <div class="card-body p-5">
-            <div class="text-center mb-4">
-                <div class="stat-icon bg-primary-subtle text-primary mx-auto mb-3">
-                    <i class="bi bi-shield-lock fs-3"></i>
+<div class="login-wrapper animate-up">
+    <div class="login-card">
+        <div class="card border-0 shadow-lg">
+            <div class="login-accent"></div>
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="login-icon">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Admin Portal</h4>
+                    <p class="text-muted small">Sign in to manage feedback</p>
                 </div>
-                <h4 class="fw-bold">Admin Portal</h4>
-                <p class="text-muted small">Sign in to manage feedback submissions</p>
+                <form method="POST" action="{{ url_for('nlcf_login') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control border-start-0" name="username" placeholder="Enter username" required autofocus>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control border-start-0" name="password" placeholder="Enter password" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </button>
+                </form>
             </div>
-            <form method="POST" action="{{ url_for('login') }}">
-                <div class="mb-3">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-control" name="username" placeholder="Enter username" required autofocus>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control" name="password" placeholder="Enter password" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 py-2">Sign In</button>
-            </form>
-
+            <div class="card-footer bg-white border-0 text-center pb-4 pt-0">
+                <a href="{{ url_for('index') }}" class="small text-muted text-decoration-none">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Home
+                </a>
+            </div>
         </div>
     </div>
 </div>

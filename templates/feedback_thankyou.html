@@ -2,27 +2,69 @@
 
 {% block title %}Thank You - NLCF Feedback{% endblock %}
 
+{% block extra_head %}
+<style>
+    .thankyou-wrapper {
+        min-height: calc(100vh - var(--nav-height) - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+    .thankyou-card {
+        animation: scaleIn 0.5s ease;
+    }
+    .success-check {
+        width: 90px; height: 90px;
+        background: linear-gradient(135deg, var(--success), #059669);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8rem;
+        margin: 0 auto 24px;
+        box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+    }
+    .thanks-glow {
+        position: relative;
+    }
+    .thanks-glow::after {
+        content: '';
+        position: absolute;
+        top: -20px; left: 50%;
+        transform: translateX(-50%);
+        width: 120px; height: 120px;
+        background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center animate-up">
-    <div class="col-md-8 col-lg-6">
-        <div class="card border-0 shadow-lg text-center p-5">
-            <div class="success-check mx-auto mb-4">
-                <i class="bi bi-check-lg"></i>
+<div class="thankyou-wrapper">
+    <div class="col-md-8 col-lg-6 thankyou-card">
+        <div class="card border-0 shadow-lg text-center p-4 p-md-5 position-relative overflow-hidden">
+            <div class="thanks-glow">
+                <div class="success-check mx-auto">
+                    <i class="bi bi-check-lg"></i>
+                </div>
             </div>
-            <h2 class="fw-bold mb-3">Thank You for Your Feedback!</h2>
-            <p class="text-muted mb-4" style="font-size: 1.1rem;">
-                Your responses have been recorded. We truly appreciate you taking the time to share your thoughts and help us improve future events.
+            <h2 class="fw-bold mb-3">Thank You!</h2>
+            <p class="text-muted mb-3" style="font-size: 1.1rem; max-width: 400px; margin: 0 auto;">
+                Your feedback has been recorded. We truly appreciate you taking the time to share your thoughts.
             </p>
-            <p class="text-muted mb-4" style="font-size: 0.95rem;">
-                <em>"To God be all the glory!"</em>
-            </p>
-            <div class="d-flex gap-3 justify-content-center">
-                <a href="{{ url_for('feedback') }}" class="btn btn-primary px-4">
+            <div class="d-flex flex-wrap gap-3 justify-content-center mt-4">
+                <a href="{{ url_for('feedback') }}" class="btn btn-primary px-4 rounded-pill">
                     <i class="bi bi-pencil me-2"></i>Submit Another
                 </a>
-                <a href="{{ url_for('index') }}" class="btn btn-outline-primary px-4">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary px-4 rounded-pill">
                     <i class="bi bi-house me-2"></i>Return Home
                 </a>
+            </div>
+            <div class="mt-4 pt-3 border-top">
+                <p class="text-muted fst-italic mb-0 small">&ldquo;To God be all the glory!&rdquo;</p>
             </div>
         </div>
     </div>
