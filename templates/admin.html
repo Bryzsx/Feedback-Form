@@ -1,0 +1,484 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Dashboard - NLCF{% endblock %}
+
+{% block extra_head %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: var(--shadow-xl);
+    }
+    .dashboard-header h1 { color: white; margin-bottom: 8px; }
+    .dashboard-header p { opacity: 0.8; font-weight: 500; }
+
+    .analytics-card { padding: 30px; height: 100%; }
+    .bar-item { margin-bottom: 20px; }
+    .bar-item:last-child { margin-bottom: 0; }
+    .bar-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .bar-track {
+        height: 10px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .bar-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .action-btn {
+        width: 34px; height: 34px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+        border: 1px solid #e2e8f0;
+    }
+    .action-btn:hover {
+        background: #f1f5f9;
+        transform: scale(1.05);
+    }
+
+    .rating-badge {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+        border-radius: 100px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 48px;
+    }
+    .rating-Excellent { background: #d1fae5; color: #065f46; }
+    .rating-Good { background: #dbeafe; color: #1e40af; }
+    .rating-Fair { background: #fef3c7; color: #92400e; }
+    .rating-Poor { background: #fee2e2; color: #991b1b; }
+
+    .rating-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .rating-mini-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        padding: 6px 10px;
+        background: #f8fafc;
+        border-radius: 8px;
+    }
+    .rating-mini-item span:first-child {
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+
+    .code-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 28px;
+        padding: 0 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        font-family: 'JetBrains Mono', monospace;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header animate-up">
+    <div class="row align-items-center">
+        <div class="col-md-7">
+            <h1 class="display-5 fw-bold">Feedback Dashboard</h1>
+            <p class="mb-0">Review participant feedback from the 45th Annual Reunion.</p>
+        </div>
+        <div class="col-md-5 text-md-end mt-4 mt-md-0">
+            <div class="d-flex gap-2 justify-content-md-end">
+                <a href="{{ url_for('export') }}" class="btn btn-primary px-4">
+                    <i class="bi bi-file-earmark-spreadsheet me-2"></i> Export Data
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-6 col-lg-3 animate-up" style="animation-delay: 0.05s">
+        <div class="stat-card">
+            <div class="stat-icon bg-primary-subtle text-primary">
+                <i class="bi bi-chat-dots"></i>
+            </div>
+            <div class="stat-value">{{ total_feedback }}</div>
+            <div class="stat-label">Total Feedback</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3 animate-up" style="animation-delay: 0.1s">
+        <div class="stat-card">
+            <div class="stat-icon bg-success-subtle text-success">
+                <i class="bi bi-person-check"></i>
+            </div>
+            <div class="stat-value">{{ first_time_count }}</div>
+            <div class="stat-label">First-Time Attendees</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3 animate-up" style="animation-delay: 0.15s">
+        <div class="stat-card">
+            <div class="stat-icon bg-warning-subtle text-warning">
+                <i class="bi bi-person"></i>
+            </div>
+            <div class="stat-value">{{ age_dist.get('Below 18', 0) + age_dist.get('18-30', 0) + age_dist.get('31-45', 0) + age_dist.get('46-60', 0) + age_dist.get('61 and above', 0) }}</div>
+            <div class="stat-label">Age Responses</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3 animate-up" style="animation-delay: 0.2s">
+        <div class="stat-card">
+            <div class="stat-icon bg-info-subtle text-info">
+                <i class="bi bi-star"></i>
+            </div>
+            <div class="stat-value">{{ rating_data|length }}</div>
+            <div class="stat-label">Rated Categories</div>
+        </div>
+    </div>
+</div>
+
+<div class="card glass-card border-0 mb-5 animate-up" style="animation-delay: 0.25s">
+    <div class="card-body p-4">
+        <form method="GET" action="{{ url_for('admin') }}">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-6 col-md-6">
+                    <label class="form-label">Search</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control border-start-0" name="search" placeholder="Name, Church, or Comments..." value="{{ search }}">
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-10">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label">Date From</label>
+                            <input type="date" class="form-control" name="date_from" value="{{ date_from }}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Date To</label>
+                            <input type="date" class="form-control" name="date_to" value="{{ date_to }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <label class="form-label" style="visibility:hidden;">Go</label>
+                    <button type="submit" class="btn btn-primary w-100 p-2 rounded-pill"><i class="bi bi-funnel me-1"></i> Filter</button>
+                </div>
+            </div>
+            {% if search or date_from or date_to %}
+            <div class="mt-3">
+                <a href="{{ url_for('admin') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                    <i class="bi bi-x-circle me-1"></i>Reset All Filters
+                </a>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-lg-7 animate-up" style="animation-delay: 0.3s">
+        <div class="card analytics-card border-0">
+            <h5 class="fw-bold mb-4">Rating Distribution</h5>
+            {% for item in rating_data %}
+            <div class="bar-item">
+                <div class="bar-label">
+                    <span>{{ item.label }}</span>
+                    <span class="text-muted small">E:{{ item.dist['Excellent'] }} G:{{ item.dist['Good'] }} F:{{ item.dist['Fair'] }} P:{{ item.dist['Poor'] }}</span>
+                </div>
+                {% set t = item.dist['Excellent'] + item.dist['Good'] + item.dist['Fair'] + item.dist['Poor'] %}
+                <div class="d-flex gap-1" style="height: 10px;">
+                    <div class="bar-fill bg-success" style="width: {{ (item.dist['Excellent'] / t * 100) if t > 0 else 0 }}%"></div>
+                    <div class="bar-fill bg-primary" style="width: {{ (item.dist['Good'] / t * 100) if t > 0 else 0 }}%"></div>
+                    <div class="bar-fill bg-warning" style="width: {{ (item.dist['Fair'] / t * 100) if t > 0 else 0 }}%"></div>
+                    <div class="bar-fill bg-danger" style="width: {{ (item.dist['Poor'] / t * 100) if t > 0 else 0 }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="d-flex gap-3 mt-3 small text-muted">
+                <span><span class="badge bg-success">&nbsp;</span> Excellent</span>
+                <span><span class="badge bg-primary">&nbsp;</span> Good</span>
+                <span><span class="badge bg-warning">&nbsp;</span> Fair</span>
+                <span><span class="badge bg-danger">&nbsp;</span> Poor</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5 animate-up" style="animation-delay: 0.35s">
+        <div class="card analytics-card border-0">
+            <h5 class="fw-bold mb-4">Age Demographics</h5>
+            {% for group in ['Below 18', '18-30', '31-45', '46-60', '61 and above'] %}
+            {% set count = age_dist.get(group, 0) %}
+            <div class="bar-item">
+                <div class="bar-label">
+                    <span>{{ group }}</span>
+                    <span class="text-muted">{{ count }} Responses</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill bg-success" style="width: {{ (count / total_feedback * 100) if total_feedback > 0 else 0 }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="animate-up" style="animation-delay: 0.4s">
+    <div class="table-container">
+        <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-white">
+            <h5 class="fw-bold mb-0">Feedback Entries</h5>
+            <span class="badge bg-light text-dark border">{{ feedbacks|length }} Records</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name / Church</th>
+                        <th>Age Group</th>
+                        <th>Ratings</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fb in feedbacks %}
+                    <tr style="cursor: pointer;" onclick="if(event.target.closest('.action-btn,form')) return; showFeedbackDetails('{{ fb.id }}')">
+                        <td class="text-center"><span class="code-badge" style="background:var(--accent);">#{{ fb.id }}</span></td>
+                        <td>
+                            <div class="fw-bold" style="font-size:0.92rem;">{{ fb.name or 'Anonymous' }}</div>
+                            <div class="small text-muted" style="font-size:0.78rem;">{{ fb.church_location or 'No church specified' }}</div>
+                        </td>
+                        <td><span class="badge bg-light text-dark rounded-pill px-3 py-1">{{ fb.age_group or '--' }}</span></td>
+                        <td style="min-width:140px;">
+                            <div class="rating-mini-grid">
+                                {% if fb.rating_overall %}
+                                <div class="rating-mini-item">
+                                    <span>Overall</span>
+                                    <span class="rating-badge rating-{{ fb.rating_overall }}">{{ fb.rating_overall }}</span>
+                                </div>
+                                {% endif %}
+                                {% if not fb.rating_overall %}
+                                <div class="rating-mini-item text-muted"><span>No ratings</span></div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size:0.85rem;font-weight:600;">{{ fb.submission_date.strftime('%b %d, %Y') }}</div>
+                            <div style="font-size:0.75rem;color:var(--text-muted);">{{ fb.submission_date.strftime('%I:%M %p') }}</div>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1" style="justify-content:center;">
+                                <button class="btn btn-light action-btn" onclick="event.stopPropagation(); showFeedbackDetails('{{ fb.id }}')" title="View details">
+                                    <i class="bi bi-eye" style="font-size:0.9rem;color:var(--accent);"></i>
+                                </button>
+                                <form method="POST" action="{{ url_for('delete_feedback', id=fb.id) }}" class="d-inline" onsubmit="return handleDelete(event, '{{ fb.id }}', '{{ fb.name or "Anonymous" }}')">
+                                    <button type="submit" class="btn btn-light action-btn p-0 d-inline-flex" title="Delete">
+                                        <i class="bi bi-trash" style="font-size:0.9rem;color:var(--danger);"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if not feedbacks %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-chat-square-text display-4 mb-3 d-block opacity-25"></i>
+                No feedback entries found matching your criteria.
+            </div>
+            {% endif %}
+        </div>
+        {% if pagination.pages > 1 %}
+        <div class="p-4 border-top d-flex justify-content-between align-items-center bg-white flex-wrap gap-3">
+            <div class="small text-muted">
+                Showing {{ pagination.per_page * (pagination.page - 1) + 1 }}&ndash;{{ pagination.per_page * (pagination.page - 1) + feedbacks|length }} of {{ pagination.total }} records
+            </div>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link rounded-pill" href="{{ url_for('admin', page=pagination.prev_num, search=search, date_from=date_from, date_to=date_to) if pagination.has_prev else '#' }}"><i class="bi bi-chevron-left"></i></a>
+                    </li>
+                    {% for page_num in pagination.iter_pages() %}
+                    {% if page_num %}
+                    <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin', page=page_num, search=search, date_from=date_from, date_to=date_to) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link rounded-pill" href="{{ url_for('admin', page=pagination.next_num, search=search, date_from=date_from, date_to=date_to) if pagination.has_next else '#' }}"><i class="bi bi-chevron-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="modal fade" id="feedbackDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-xl">
+            <div class="modal-header border-0 pb-0 p-4">
+                <h5 class="fw-bold mb-0" id="fdName"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 pt-2">
+                <p class="small text-muted mb-3" id="fdChurch"></p>
+                <div class="row g-3 mb-3">
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded-3">
+                            <label class="small text-muted fw-bold d-block mb-1">Age Group</label>
+                            <span class="fw-bold" id="fdAgeGroup"></span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded-3">
+                            <label class="small text-muted fw-bold d-block mb-1">First Time?</label>
+                            <span class="fw-bold" id="fdFirstTime"></span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded-3">
+                            <label class="small text-muted fw-bold d-block mb-1">Date</label>
+                            <span class="fw-bold" id="fdDate"></span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="fw-bold mb-2">Ratings</h6>
+                <div class="row g-2 mb-3" id="fdRatings"></div>
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Most Impactful Part</h6>
+                    <p class="mb-0" id="fdImpact"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Enjoyed Most</h6>
+                    <p class="mb-0 text-muted" id="fdEnjoyed"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Areas for Improvement</h6>
+                    <p class="mb-0 text-muted" id="fdImprove"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Announcements Clarity</h6>
+                    <p class="mb-0" id="fdClarity"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Spiritual Impact</h6>
+                    <p class="mb-1" id="fdFaith"></p>
+                    <p class="mb-0 text-muted" id="fdLesson"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Connected to NLCF</h6>
+                    <p class="mb-0" id="fdConnected"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Future Attendance</h6>
+                    <p class="mb-0" id="fdFuture"></p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-2">Future Topics</h6>
+                    <p class="mb-0 text-muted" id="fdTopics"></p>
+                </div>
+                <div class="mb-3" id="fdTestimonyDiv" style="display:none;">
+                    <h6 class="fw-bold mb-2">Testimony</h6>
+                    <div class="p-3 bg-light rounded-3">
+                        <p class="mb-0 fst-italic" id="fdTestimony"></p>
+                    </div>
+                </div>
+                <div class="mb-0">
+                    <h6 class="fw-bold mb-2">Final Comments</h6>
+                    <p class="mb-0 text-muted" id="fdComments"></p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function handleDelete(event, id, name) {
+    event.preventDefault();
+    const form = event.target;
+    Swal.fire({
+        title: `Delete feedback #${id} from ${name}?`,
+        text: "This action cannot be undone.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) form.submit();
+    });
+    return false;
+}
+
+function showFeedbackDetails(id) {
+    fetch(`/admin/feedback/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('fdName').textContent = data.name || 'Anonymous';
+            document.getElementById('fdChurch').textContent = data.church_location || 'No church specified';
+            document.getElementById('fdAgeGroup').textContent = data.age_group || '--';
+            document.getElementById('fdFirstTime').textContent = data.first_time_attending || '--';
+            document.getElementById('fdDate').textContent = data.submission_date || '--';
+            document.getElementById('fdImpact').textContent = data.most_impactful_part || '--';
+            if (data.most_impactful_other) {
+                document.getElementById('fdImpact').textContent += ' (' + data.most_impactful_other + ')';
+            }
+            document.getElementById('fdEnjoyed').textContent = data.enjoyed_most || 'No response';
+            document.getElementById('fdImprove').textContent = data.areas_for_improvement || 'No response';
+            document.getElementById('fdClarity').textContent = data.announcements_clarity || '--';
+            document.getElementById('fdFaith').textContent = data.faith_strengthened || '--';
+            document.getElementById('fdLesson').textContent = data.spiritual_lesson || '';
+            document.getElementById('fdConnected').textContent = data.connected_to_nlcf || '--';
+            document.getElementById('fdFuture').textContent = data.attend_future || '--';
+            document.getElementById('fdTopics').textContent = data.future_topics || 'No response';
+            document.getElementById('fdComments').textContent = data.final_comments || 'No response';
+
+            const testimonyDiv = document.getElementById('fdTestimonyDiv');
+            if (data.testimony) {
+                testimonyDiv.style.display = 'block';
+                document.getElementById('fdTestimony').textContent = data.testimony;
+            } else {
+                testimonyDiv.style.display = 'none';
+            }
+
+            const rc = document.getElementById('fdRatings');
+            const rm = data.ratings || {};
+            let html = '';
+            for (const [label, rating] of Object.entries(rm)) {
+                html += `<div class="col-6"><div class="d-flex justify-content-between p-2 bg-light rounded-3 small"><span>${label}</span><span class="rating-badge rating-${rating}">${rating}</span></div></div>`;
+            }
+            rc.innerHTML = html || '<div class="col-12 text-muted small">No ratings provided</div>';
+
+            new bootstrap.Modal(document.getElementById('feedbackDetailsModal')).show();
+        });
+}
+</script>
+{% endblock %}

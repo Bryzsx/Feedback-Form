@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You - NLCF Feedback{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-up">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-0 shadow-lg text-center p-5">
+            <div class="success-check mx-auto mb-4">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <h2 class="fw-bold mb-3">Thank You for Your Feedback!</h2>
+            <p class="text-muted mb-4" style="font-size: 1.1rem;">
+                Your responses have been recorded. We truly appreciate you taking the time to share your thoughts and help us improve future events.
+            </p>
+            <p class="text-muted mb-4" style="font-size: 0.95rem;">
+                <em>"To God be all the glory!"</em>
+            </p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{{ url_for('feedback') }}" class="btn btn-primary px-4">
+                    <i class="bi bi-pencil me-2"></i>Submit Another
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary px-4">
+                    <i class="bi bi-house me-2"></i>Return Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

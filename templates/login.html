@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login - NLCF Feedback{% endblock %}
+
+{% block extra_head %}
+<style>
+    .login-card {
+        max-width: 420px;
+        margin: 60px auto;
+    }
+    .login-accent {
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent), var(--secondary));
+        border-radius: 0 0 4px 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-card animate-up">
+    <div class="card border-0 shadow-lg">
+        <div class="login-accent"></div>
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <div class="stat-icon bg-primary-subtle text-primary mx-auto mb-3">
+                    <i class="bi bi-shield-lock fs-3"></i>
+                </div>
+                <h4 class="fw-bold">Admin Portal</h4>
+                <p class="text-muted small">Sign in to manage feedback submissions</p>
+            </div>
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" placeholder="Enter username" required autofocus>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">Sign In</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

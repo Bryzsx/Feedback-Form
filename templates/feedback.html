@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Form - NLCF 45th Annual Reunion{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --radio-size: 20px;
+        --radio-border: #cbd5e1;
+        --radio-checked: var(--accent);
+    }
+    .feedback-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: var(--shadow-xl);
+        text-align: center;
+    }
+    .feedback-header h1 { color: white; margin-bottom: 8px; }
+    .feedback-header p { opacity: 0.85; font-weight: 500; margin-bottom: 0; }
+    .form-section {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(0,0,0,0.04);
+    }
+    .form-section h4 {
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* ---- Rating Grid ---- */
+    .rating-grid {
+        display: grid;
+        grid-template-columns: 1fr repeat(4, 1fr);
+        gap: 0;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+    .rating-grid .header-cell {
+        background: #f8fafc;
+        font-weight: 600;
+        padding: 14px 16px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        border-bottom: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+    }
+    .rating-grid .header-cell:first-child {
+        justify-content: flex-start;
+    }
+    .rating-grid .label-cell {
+        padding: 14px 16px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #f1f5f9;
+        background: white;
+        display: flex;
+        align-items: center;
+        min-height: 52px;
+    }
+    .rating-grid .radio-cell {
+        text-align: center;
+        padding: 0;
+        border-bottom: 1px solid #f1f5f9;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+    }
+    .rating-grid .radio-cell:hover { background: #f8fafc; }
+
+    /* Custom circle radio for rating grid */
+    .rating-grid .radio-cell input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: var(--radio-size);
+        height: var(--radio-size);
+        border: 2px solid var(--radio-border);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        background: white;
+        flex-shrink: 0;
+    }
+    .rating-grid .radio-cell input[type="radio"]:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+    .rating-grid .radio-cell input[type="radio"]:checked {
+        border-color: var(--accent);
+        border-width: 6px;
+        background: white;
+    }
+    .rating-grid .radio-cell input[type="radio"]:checked:hover {
+        box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+    .rating-grid .label-cell:last-of-type,
+    .rating-grid .radio-cell:last-of-type {
+        border-bottom: none;
+    }
+
+    /* ---- Radio Group (pill buttons) ---- */
+    .radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .radio-group .form-check {
+        padding: 0;
+        margin: 0;
+        min-width: 80px;
+    }
+    .radio-group .form-check input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+    .radio-group .form-check label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 100px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: var(--text-main);
+        background: white;
+        user-select: none;
+        white-space: nowrap;
+    }
+    .radio-group .form-check label::before {
+        content: '';
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--radio-border);
+        border-radius: 50%;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+        display: inline-block;
+    }
+    .radio-group .form-check label:hover {
+        border-color: var(--accent);
+        background: rgba(85, 107, 47, 0.04);
+    }
+    .radio-group .form-check label:hover::before {
+        border-color: var(--accent);
+    }
+    .radio-group .form-check input[type="radio"]:checked + label {
+        border-color: var(--accent);
+        background: rgba(85, 107, 47, 0.07);
+        color: var(--accent);
+        font-weight: 600;
+    }
+    .radio-group .form-check input[type="radio"]:checked + label::before {
+        border-color: var(--accent);
+        border-width: 6px;
+    }
+
+    .other-input { margin-top: 10px; padding-left: 12px; }
+
+    /* ---- Responsive tweaks ---- */
+    @media (max-width: 576px) {
+        .rating-grid {
+            grid-template-columns: 1fr repeat(4, 1fr);
+            font-size: 0.8rem;
+        }
+        .rating-grid .header-cell {
+            padding: 10px 8px;
+            font-size: 0.65rem;
+        }
+        .rating-grid .label-cell {
+            padding: 12px 10px;
+            font-size: 0.82rem;
+        }
+        .radio-group .form-check label {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="feedback-header animate-up">
+    <h1 class="display-5 fw-bold">NLCF 45th Annual Reunion & Church Anniversary</h1>
+    <p class="mb-0">Participant Feedback Form</p>
+    <p class="mt-2 mb-0" style="opacity: 0.7; font-size: 0.9rem;">Thank you for attending our celebration! Your feedback will help us improve future church events and better serve our church family.</p>
+</div>
+
+<form method="POST" action="{{ url_for('feedback') }}" class="animate-up" style="animation-delay: 0.1s">
+    <div class="form-section">
+        <h4><i class="bi bi-person me-2"></i>Basic Information</h4>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <label class="form-label">Name <span class="text-muted fw-normal">(Optional)</span></label>
+                <input type="text" class="form-control" name="name" placeholder="Your name" value="{{ data.get('name', '') }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Church / Location</label>
+                <input type="text" class="form-control" name="church_location" placeholder="Your church or location" value="{{ data.get('church_location', '') }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Age Group</label>
+                <div class="radio-group">
+                    {% for option in ['Below 18', '18-30', '31-45', '46-60', '61 and above'] %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="age_group" value="{{ option }}" id="age_{{ loop.index }}" {% if data.get('age_group') == option %}checked{% endif %}>
+                        <label class="form-check-label" for="age_{{ loop.index }}">{{ option }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Is this your first time attending an NLCF Anniversary/Reunion?</label>
+                <div class="radio-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="first_time_attending" value="Yes" id="first_yes" {% if data.get('first_time_attending') == 'Yes' %}checked{% endif %}>
+                        <label class="form-check-label" for="first_yes">Yes</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="first_time_attending" value="No" id="first_no" {% if data.get('first_time_attending') == 'No' %}checked{% endif %}>
+                        <label class="form-check-label" for="first_no">No</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h4><i class="bi bi-star me-2"></i>Event Evaluation</h4>
+        <p class="text-muted mb-4">Please rate the following:</p>
+        <div class="rating-grid">
+            <div class="header-cell">Area</div>
+            <div class="header-cell">Excellent</div>
+            <div class="header-cell">Good</div>
+            <div class="header-cell">Fair</div>
+            <div class="header-cell">Poor</div>
+            {% set ratings = [
+                ('rating_registration', 'Registration Process'),
+                ('rating_venue', 'Venue & Facilities'),
+                ('rating_program_flow', 'Program Flow'),
+                ('rating_av', 'Audio & Visual Presentation'),
+                ('rating_worship', 'Praise & Worship'),
+                ('rating_speakers', 'Messages/Speakers'),
+                ('rating_fellowship', 'Fellowship Experience'),
+                ('rating_food', 'Food & Refreshments'),
+                ('rating_organization', 'Event Organization'),
+                ('rating_overall', 'Overall Experience')
+            ] %}
+            {% for field, label in ratings %}
+            <div class="label-cell">{{ label }}</div>
+            {% for val in ['Excellent', 'Good', 'Fair', 'Poor'] %}
+            <div class="radio-cell">
+                <input type="radio" name="{{ field }}" value="{{ val }}" {% if data.get(field) == val %}checked{% endif %}>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h4><i class="bi bi-chat-quote me-2"></i>Program Feedback</h4>
+        <div class="mb-4">
+            <label class="form-label">1. Which part of the program impacted you the most?</label>
+            <div class="radio-group">
+                {% for option in ['Praise & Worship', 'Testimonies', 'Anniversary Celebration', 'Reunion Fellowship', 'Graduation Ceremony', 'Main Message', 'Special Presentations'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="most_impactful_part" value="{{ option }}" id="impact_{{ loop.index }}" {% if data.get('most_impactful_part') == option %}checked{% endif %}>
+                    <label class="form-check-label" for="impact_{{ loop.index }}">{{ option }}</label>
+                </div>
+                {% endfor %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="most_impactful_part" value="Other" id="impact_other" {% if data.get('most_impactful_part') == 'Other' %}checked{% endif %}>
+                    <label class="form-check-label" for="impact_other">Other</label>
+                </div>
+            </div>
+            <div class="other-input" id="impact_other_div" {% if data.get('most_impactful_part') != 'Other' %}style="display:none"{% endif %}>
+                <input type="text" class="form-control" name="most_impactful_other" placeholder="Please specify..." value="{{ data.get('most_impactful_other', '') }}">
+            </div>
+        </div>
+        <div class="mb-4">
+            <label class="form-label">2. What did you enjoy most about the event?</label>
+            <textarea class="form-control" name="enjoyed_most" rows="3" placeholder="Share your thoughts...">{{ data.get('enjoyed_most', '') }}</textarea>
+        </div>
+        <div class="mb-4">
+            <label class="form-label">3. What areas can we improve for future events?</label>
+            <textarea class="form-control" name="areas_for_improvement" rows="3" placeholder="Your suggestions...">{{ data.get('areas_for_improvement', '') }}</textarea>
+        </div>
+        <div>
+            <label class="form-label">4. Were the event announcements and instructions clear?</label>
+            <div class="radio-group">
+                {% for option in ['Very Clear', 'Clear', 'Somewhat Clear', 'Not Clear'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="announcements_clarity" value="{{ option }}" id="clarity_{{ loop.index }}" {% if data.get('announcements_clarity') == option %}checked{% endif %}>
+                    <label class="form-check-label" for="clarity_{{ loop.index }}">{{ option }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h4><i class="bi bi-heart me-2"></i>Spiritual Impact</h4>
+        <div class="mb-4">
+            <label class="form-label">1. Did this event strengthen your faith and relationship with God?</label>
+            <div class="radio-group">
+                {% for option in ['Strongly Agree', 'Agree', 'Neutral', 'Disagree'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="faith_strengthened" value="{{ option }}" id="faith_{{ loop.index }}" {% if data.get('faith_strengthened') == option %}checked{% endif %}>
+                    <label class="form-check-label" for="faith_{{ loop.index }}">{{ option }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-4">
+            <label class="form-label">2. What spiritual lesson or message did you take home from this event?</label>
+            <textarea class="form-control" name="spiritual_lesson" rows="3" placeholder="Share what God spoke to your heart...">{{ data.get('spiritual_lesson', '') }}</textarea>
+        </div>
+        <div>
+            <label class="form-label">3. Do you feel more connected to the NLCF family after attending?</label>
+            <div class="radio-group">
+                {% for option in ['Yes', 'Somewhat', 'No'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="connected_to_nlcf" value="{{ option }}" id="connect_{{ loop.index }}" {% if data.get('connected_to_nlcf') == option %}checked{% endif %}>
+                    <label class="form-check-label" for="connect_{{ loop.index }}">{{ option }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h4><i class="bi bi-calendar-event me-2"></i>Future Events</h4>
+        <div class="mb-4">
+            <label class="form-label">1. Would you attend future NLCF Anniversary/Reunion events?</label>
+            <div class="radio-group">
+                {% for option in ['Definitely', 'Probably', 'Not Sure', 'No'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="attend_future" value="{{ option }}" id="future_{{ loop.index }}" {% if data.get('attend_future') == option %}checked{% endif %}>
+                    <label class="form-check-label" for="future_{{ loop.index }}">{{ option }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div>
+            <label class="form-label">2. What activities or topics would you like to see in future events?</label>
+            <textarea class="form-control" name="future_topics" rows="3" placeholder="Your ideas...">{{ data.get('future_topics', '') }}</textarea>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h4><i class="bi bi-megaphone me-2"></i>Testimony <span class="text-muted fw-normal">(Optional)</span></h4>
+        <p class="text-muted mb-3">If God moved in your life through this event, we would love to hear your testimony:</p>
+        <textarea class="form-control" name="testimony" rows="4" placeholder="Share your testimony...">{{ data.get('testimony', '') }}</textarea>
+    </div>
+
+    <div class="form-section">
+        <h4><i class="bi bi-pencil me-2"></i>Final Comments or Suggestions</h4>
+        <textarea class="form-control" name="final_comments" rows="3" placeholder="Any final thoughts?">{{ data.get('final_comments', '') }}</textarea>
+    </div>
+
+    <div class="text-center mb-5 animate-up" style="animation-delay: 0.3s">
+        <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+            <i class="bi bi-send me-2"></i>Submit Feedback
+        </button>
+        <p class="text-muted mt-3 small">"To God be all the glory!"</p>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleImpactOther() {
+    const otherRadio = document.getElementById('impact_other');
+    const otherDiv = document.getElementById('impact_other_div');
+    if (otherRadio) {
+        otherDiv.style.display = otherRadio.checked ? 'block' : 'none';
+    }
+}
+document.querySelectorAll('input[name="most_impactful_part"]').forEach(function(r) {
+    r.addEventListener('change', toggleImpactOther);
+});
+</script>
+{% endblock %}

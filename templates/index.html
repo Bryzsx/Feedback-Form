@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}NLCF 45th Annual Reunion - Feedback Form{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-up">
+    <div class="col-lg-8 text-center" style="padding: 80px 0;">
+        <div class="mb-4">
+            <img src="{{ url_for('static', filename='img/Logo.jpg') }}" alt="NLCF Logo" style="width: 120px; height: 120px; border-radius: 20px; box-shadow: var(--shadow-lg);">
+        </div>
+        <h1 class="display-4 fw-bold mb-3">NLCF 45th Annual Reunion</h1>
+        <p class="text-gradient display-6 fw-bold mb-3">&amp; Church Anniversary</p>
+        <p class="lead text-muted mb-4" style="font-size: 1.2rem;">Honoring our Past, Celebrating our Present, Inspiring our Future</p>
+        <p class="text-muted mb-5" style="max-width: 600px; margin: 0 auto;">Your feedback helps us improve future church events and better serve our church family.</p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{{ url_for('feedback') }}" class="btn btn-primary btn-lg px-5 py-3">
+                    <i class="bi bi-pencil-square me-2"></i>Give Feedback
+                </a>
+            </div>
+        <p class="mt-5 text-muted fst-italic" style="font-size: 1rem;">&ldquo;To God be all the glory!&rdquo;</p>
+    </div>
+</div>
+{% endblock %}
