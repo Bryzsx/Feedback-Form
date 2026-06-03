@@ -25,7 +25,7 @@
         background: white;
         border-radius: var(--radius-lg);
         padding: clamp(20px, 4vw, 32px);
-        margin-bottom: 20px;
+        margin-bottom: 32px;
         box-shadow: var(--shadow-md);
         border: 1px solid rgba(0,0,0,0.04);
         position: relative;
@@ -51,113 +51,171 @@
         font-size: clamp(1rem, 4vw, 1.3rem);
     }
 
-    /* ---- Rating Rows (mobile-first) ---- */
-    .rating-row {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        padding: 14px 16px;
-        border-bottom: 1px solid #f1f5f9;
+
+
+    /* ---- Rating Table ---- */
+    .rating-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .rating-table {
+        width: 100%;
+        border-collapse: collapse;
         background: white;
+        table-layout: fixed;
     }
-    .rating-row:last-child { border-bottom: none; }
-    .rating-row .rating-label {
-        font-weight: 600;
-        font-size: 0.9rem;
+    .rating-table thead th {
+        background: #f8fafc;
+        font-weight: 700;
+        padding: 16px 14px;
+        text-align: center;
         color: var(--text-main);
+        border-bottom: 2px solid #e2e8f0;
+        font-size: 0.9rem;
     }
-    .rating-row .rating-options {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
+    .rating-table thead th:first-child {
+        text-align: left;
+        padding-left: 18px;
+        width: 200px;
     }
-    .rating-row .rating-option {
-        flex: 1 0 auto;
-        min-width: 0;
+    .rating-table tbody td {
+        padding: 14px 14px;
+        text-align: center;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
     }
-    .rating-row .rating-option input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-        pointer-events: none;
+    .rating-table tbody td:first-child {
+        text-align: left;
+        padding-left: 18px;
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.88rem;
     }
-    .rating-row .rating-option label {
-        display: flex;
+    .rating-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .rating-table tbody tr:hover {
+        background: rgba(85, 107, 47, 0.02);
+    }
+    .circle-btn {
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        padding: 10px 12px;
+        width: 40px;
+        height: 40px;
         border: 2px solid #e2e8f0;
-        border-radius: 100px;
+        border-radius: 50%;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-weight: 500;
-        font-size: 0.82rem;
-        color: var(--text-main);
         background: white;
-        user-select: none;
-        text-align: center;
+        position: relative;
     }
-    .rating-row .rating-option label::before {
+    .circle-btn input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    .circle-btn::after {
         content: '';
         width: 16px;
         height: 16px;
         border: 2px solid var(--radio-border);
         border-radius: 50%;
-        flex-shrink: 0;
         transition: all 0.2s ease;
-        display: inline-block;
+        pointer-events: none;
     }
-    .rating-row .rating-option label:hover {
+    .circle-btn:hover {
         border-color: var(--accent);
         background: rgba(85, 107, 47, 0.04);
     }
-    .rating-row .rating-option label:hover::before { border-color: var(--accent); }
-    .rating-row .rating-option input[type="radio"]:checked + label {
+    .circle-btn:hover::after {
+        border-color: var(--accent);
+    }
+    .circle-btn.checked {
         border-color: var(--accent);
         background: rgba(85, 107, 47, 0.07);
-        color: var(--accent);
-        font-weight: 600;
     }
-    .rating-row .rating-option input[type="radio"]:checked + label::before {
+    .circle-btn.checked::after {
         border-color: var(--accent);
         border-width: 6px;
     }
-    @media (min-width: 768px) {
-        .rating-row {
-            flex-direction: row;
-            align-items: center;
-            gap: 16px;
+    @media (max-width: 767px) {
+        .rating-table thead th {
+            padding: 12px 10px;
+            font-size: 0.78rem;
         }
-        .rating-row .rating-label {
-            width: 200px;
-            flex-shrink: 0;
+        .rating-table thead th:first-child {
+            width: 130px;
+            padding-left: 12px;
         }
-        .rating-row .rating-options {
-            flex: 1;
-            display: flex;
-            gap: 8px;
+        .rating-table tbody td {
+            padding: 10px 8px;
         }
-        .rating-row .rating-option {
-            flex: 1;
+        .rating-table tbody td:first-child {
+            font-size: 0.78rem;
+            padding-left: 12px;
         }
-        .rating-row .rating-option label {
-            font-size: 0.85rem;
-            padding: 10px 16px;
+        .circle-btn {
+            width: 34px;
+            height: 34px;
+        }
+        .circle-btn::after {
+            width: 13px;
+            height: 13px;
+        }
+        .circle-btn.checked::after {
+            border-width: 5px;
+        }
+    }
+    @media (max-width: 576px) {
+        .rating-table-wrap {
+            margin: 0;
+            overflow-x: auto;
+        }
+        .rating-table thead th {
+            padding: 8px 6px;
+            font-size: 0.7rem;
+        }
+        .rating-table thead th:first-child {
+            width: 110px;
+            padding-left: 8px;
+        }
+        .rating-table tbody td {
+            padding: 8px 4px;
+        }
+        .rating-table tbody td:first-child {
+            font-size: 0.72rem;
+            padding-left: 8px;
+            padding-right: 8px;
+            width: 110px;
+        }
+        .circle-btn {
+            width: 36px;
+            height: 36px;
+        }
+        .circle-btn::after {
+            width: 14px;
+            height: 14px;
+        }
+        .circle-btn.checked::after {
+            border-width: 5px;
         }
     }
 
-    /* ---- Radio Group (pill buttons) ---- */
+    /* ---- Radio Group (vertical list) ---- */
     .radio-group {
         display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+        flex-direction: column;
+        gap: 4px;
     }
     .radio-group .form-check {
+        display: flex;
+        align-items: center;
         padding: 0;
         margin: 0;
-        min-width: 80px;
+        min-height: 0;
     }
     .radio-group .form-check input[type="radio"] {
         position: absolute;
@@ -169,24 +227,22 @@
     .radio-group .form-check label {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 10px 20px;
-        border: 2px solid #e2e8f0;
-        border-radius: 100px;
+        gap: 12px;
+        padding: 7px 0;
         cursor: pointer;
         transition: all 0.2s ease;
         font-weight: 500;
         font-size: 0.9rem;
         color: var(--text-main);
-        background: white;
         user-select: none;
-        white-space: nowrap;
+        background: none;
+        border: none;
+        white-space: normal;
     }
     .radio-group .form-check label::before {
         content: '';
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         border: 2px solid var(--radio-border);
         border-radius: 50%;
         flex-shrink: 0;
@@ -194,50 +250,41 @@
         display: inline-block;
     }
     .radio-group .form-check label:hover {
-        border-color: var(--accent);
-        background: rgba(85, 107, 47, 0.04);
+        color: var(--accent);
     }
     .radio-group .form-check label:hover::before {
         border-color: var(--accent);
     }
     .radio-group .form-check input[type="radio"]:checked + label {
-        border-color: var(--accent);
-        background: rgba(85, 107, 47, 0.07);
         color: var(--accent);
         font-weight: 600;
     }
     .radio-group .form-check input[type="radio"]:checked + label::before {
         border-color: var(--accent);
-        border-width: 6px;
+        border-width: 7px;
     }
 
     .other-input { margin-top: 10px; padding-left: 12px; }
     .text-danger { color: var(--danger) !important; font-weight: 700; }
+    .form-label { line-height: 1.4; }
 
     /* ---- Responsive tweaks ---- */
     @media (max-width: 576px) {
         .feedback-header { padding: 24px 16px; border-radius: var(--radius-md); }
         .form-section { border-radius: var(--radius-md); padding: 18px; }
-        .radio-group { gap: 8px; }
-        .radio-group .form-check { min-width: 0; flex: 1 1 auto; }
+        .radio-group { gap: 2px; }
         .radio-group .form-check label {
-            padding: 8px 12px;
-            font-size: 0.78rem;
-            gap: 4px;
+            padding: 5px 0;
+            font-size: 0.82rem;
+            gap: 10px;
         }
         .radio-group .form-check label::before {
-            width: 14px; height: 14px;
+            width: 18px; height: 18px;
         }
-        .rating-row { padding: 12px 14px; gap: 6px; }
-        .rating-row .rating-label { font-size: 0.82rem; }
-        .rating-row .rating-option label {
-            padding: 8px 10px;
-            font-size: 0.72rem;
-            gap: 4px;
+        .radio-group .form-check input[type="radio"]:checked + label::before {
+            border-width: 6px;
         }
-        .rating-row .rating-option label::before {
-            width: 14px; height: 14px;
-        }
+
     }
 </style>
 {% endblock %}
@@ -283,41 +330,53 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="first_time_attending" value="No" id="first_no" {% if data.get('first_time_attending') == 'No' %}checked{% endif %} required>
                         <label class="form-check-label" for="first_no">No</label>
-                    </div>
-                </div>
             </div>
         </div>
+        </div>
+    </div>
     </div>
 
     <div class="form-section">
         <h4><i class="bi bi-star me-2"></i>Event Evaluation</h4>
         <p class="text-muted mb-4">Please rate the following: <span class="text-danger">*</span></p>
-        <div class="border rounded-3 overflow-hidden">
-            {% set ratings = [
-                ('rating_registration', 'Registration Process'),
-                ('rating_venue', 'Venue & Facilities'),
-                ('rating_program_flow', 'Program Flow'),
-                ('rating_av', 'Audio & Visual Presentation'),
-                ('rating_worship', 'Praise & Worship'),
-                ('rating_speakers', 'Messages/Speakers'),
-                ('rating_fellowship', 'Fellowship Experience'),
-                ('rating_food', 'Food & Refreshments'),
-                ('rating_organization', 'Event Organization'),
-                ('rating_overall', 'Overall Experience')
-            ] %}
-            {% for field, label in ratings %}
-            <div class="rating-row">
-                <div class="rating-label">{{ label }}</div>
-                <div class="rating-options">
-                    {% for val in ['Excellent', 'Good', 'Fair', 'Poor'] %}
-                    <div class="rating-option">
-                        <input type="radio" name="{{ field }}" value="{{ val }}" id="{{ field }}_{{ loop.index }}" {% if data.get(field) == val %}checked{% endif %} required>
-                        <label for="{{ field }}_{{ loop.index }}">{{ val }}</label>
-                    </div>
+        {% set ratings = [
+            ('rating_registration', 'Registration Process'),
+            ('rating_venue', 'Venue & Facilities'),
+            ('rating_program_flow', 'Program Flow'),
+            ('rating_av', 'Audio & Visual Presentation'),
+            ('rating_worship', 'Praise & Worship'),
+            ('rating_speakers', 'Messages/Speakers'),
+            ('rating_fellowship', 'Fellowship Experience'),
+            ('rating_food', 'Food & Refreshments'),
+            ('rating_organization', 'Event Organization'),
+            ('rating_overall', 'Overall Experience')
+        ] %}
+        {% set labels = ['Excellent', 'Good', 'Fair', 'Poor'] %}
+        <div class="rating-table-wrap">
+            <table class="rating-table">
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        {% for l in labels %}
+                        <th>{{ l }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field, label in ratings %}
+                    <tr>
+                        <td>{{ label }}</td>
+                        {% for l in labels %}
+                        <td>
+                            <label class="circle-btn{% if data.get(field) == l %} checked{% endif %}" data-rating="{{ field }}" data-val="{{ l }}">
+                                <input type="radio" name="{{ field }}" value="{{ l }}" {% if data.get(field) == l %}checked{% endif %} required>
+                            </label>
+                        </td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </div>
-            </div>
-            {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -436,6 +495,17 @@
 
 {% block scripts %}
 <script>
+document.querySelectorAll('.circle-btn input[type="radio"]').forEach(function(r) {
+    r.addEventListener('change', function() {
+        var name = this.getAttribute('name');
+        document.querySelectorAll('.circle-btn[data-rating="' + name + '"]').forEach(function(btn) {
+            btn.classList.remove('checked');
+        });
+        if (this.checked) {
+            this.parentNode.classList.add('checked');
+        }
+    });
+});
 function toggleImpactOther() {
     const otherRadio = document.getElementById('impact_other');
     const otherDiv = document.getElementById('impact_other_div');
