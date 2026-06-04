@@ -398,6 +398,20 @@ def server_error(e):
     return render_template('base.html', title='500 - Server Error'), 500
 
 
+def migrate_database():
+    try:
+        from sqlalchemy import inspect as _inspect
+        inspector = _inspect(db.engine)
+        columns = [c['name'] for c in inspector.get_columns('feedback')]
+        if 'participant_category' not in columns:
+            db.session.execute(db.text("ALTER TABLE feedback ADD COLUMN participant_category VARCHAR(50)"))
+            db.session.commit()
+            logging.info("Migration: added participant_category column")
+    except Exception as e:
+        db.session.rollback()
+        logging.warning(f"Migration skipped or failed: {e}")
+
+
 def init_database():
     with app.app_context():
         from sqlalchemy import event as _event
@@ -414,6 +428,7 @@ def init_database():
                 cursor.close()
 
         db.create_all()
+        migrate_database()
 
         old = Admin.query.filter_by(username='admin').first()
         if old:
