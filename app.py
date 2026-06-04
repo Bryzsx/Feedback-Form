@@ -60,6 +60,7 @@ class Feedback(db.Model):
     church_location = db.Column(db.String(200), nullable=True)
     age_group = db.Column(db.String(50), nullable=True)
     first_time_attending = db.Column(db.String(10), nullable=True)
+    participant_category = db.Column(db.String(50), nullable=True)
     rating_registration = db.Column(db.String(20), nullable=True)
     rating_venue = db.Column(db.String(20), nullable=True)
     rating_program_flow = db.Column(db.String(20), nullable=True)
@@ -96,7 +97,7 @@ def index():
 
 
 REQUIRED_FIELDS = [
-    'age_group', 'first_time_attending',
+    'age_group', 'first_time_attending', 'participant_category',
     'rating_registration', 'rating_venue', 'rating_program_flow', 'rating_av',
     'rating_worship', 'rating_speakers', 'rating_fellowship', 'rating_food',
     'rating_organization', 'rating_overall',
@@ -107,6 +108,7 @@ REQUIRED_FIELDS = [
 REQUIRED_LABELS = {
     'age_group': 'Age Group',
     'first_time_attending': 'First time attending?',
+    'participant_category': 'Participant Category',
     'rating_registration': 'Rating: Registration',
     'rating_venue': 'Rating: Venue & Facilities',
     'rating_program_flow': 'Rating: Program Flow',
@@ -140,6 +142,7 @@ def feedback():
             church_location=data.get('church_location', '').strip(),
             age_group=data.get('age_group', ''),
             first_time_attending=data.get('first_time_attending', ''),
+            participant_category=data.get('participant_category', ''),
             rating_registration=data.get('rating_registration', ''),
             rating_venue=data.get('rating_venue', ''),
             rating_program_flow=data.get('rating_program_flow', ''),
@@ -292,6 +295,7 @@ def get_feedback(id):
     return jsonify({
         'id': fb.id, 'name': fb.name, 'church_location': fb.church_location,
         'age_group': fb.age_group, 'first_time_attending': fb.first_time_attending,
+        'participant_category': fb.participant_category,
         'ratings': ratings,
         'most_impactful_part': fb.most_impactful_part,
         'most_impactful_other': fb.most_impactful_other,
@@ -331,6 +335,7 @@ def export():
             data.append({
                 'ID': fb.id, 'Name': fb.name or '', 'Church/Location': fb.church_location or '',
                 'Age Group': fb.age_group or '', 'First Time Attending': fb.first_time_attending or '',
+                'Participant Category': fb.participant_category or '',
                 'Rating - Registration': fb.rating_registration or '',
                 'Rating - Venue': fb.rating_venue or '', 'Rating - Program Flow': fb.rating_program_flow or '',
                 'Rating - AV': fb.rating_av or '', 'Rating - Worship': fb.rating_worship or '',

@@ -334,6 +334,17 @@
         </div>
         </div>
     </div>
+            <div class="col-md-6">
+                <label class="form-label">Participant Category <span class="text-danger">*</span></label>
+                <div class="radio-group">
+                    {% for option in ['Congregation', 'Working Committee', 'Pastor'] %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="participant_category" value="{{ option }}" id="cat_{{ loop.index }}" {% if data.get('participant_category') == option %}checked{% endif %} required>
+                        <label class="form-check-label" for="cat_{{ loop.index }}">{{ option }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
     </div>
 
     <div class="form-section">

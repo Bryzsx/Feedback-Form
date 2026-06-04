@@ -363,19 +363,25 @@
             <div class="modal-body p-4 pt-2">
                 <p class="small text-muted mb-3" id="fdChurch"></p>
                 <div class="row g-3 mb-3">
-                    <div class="col-4">
+                    <div class="col-3">
                         <div class="p-3 bg-light rounded-3">
                             <label class="small text-muted fw-bold d-block mb-1">Age Group</label>
                             <span class="fw-bold" id="fdAgeGroup"></span>
                         </div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
+                        <div class="p-3 bg-light rounded-3">
+                            <label class="small text-muted fw-bold d-block mb-1">Category</label>
+                            <span class="fw-bold" id="fdCategory"></span>
+                        </div>
+                    </div>
+                    <div class="col-3">
                         <div class="p-3 bg-light rounded-3">
                             <label class="small text-muted fw-bold d-block mb-1">First Time?</label>
                             <span class="fw-bold" id="fdFirstTime"></span>
                         </div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
                         <div class="p-3 bg-light rounded-3">
                             <label class="small text-muted fw-bold d-block mb-1">Date</label>
                             <span class="fw-bold" id="fdDate"></span>
@@ -462,6 +468,7 @@ function showFeedbackDetails(id) {
             document.getElementById('fdName').textContent = data.name || 'Anonymous';
             document.getElementById('fdChurch').textContent = data.church_location || 'No church specified';
             document.getElementById('fdAgeGroup').textContent = data.age_group || '--';
+            document.getElementById('fdCategory').textContent = data.participant_category || '--';
             document.getElementById('fdFirstTime').textContent = data.first_time_attending || '--';
             document.getElementById('fdDate').textContent = data.submission_date || '--';
             document.getElementById('fdImpact').textContent = data.most_impactful_part || '--';
