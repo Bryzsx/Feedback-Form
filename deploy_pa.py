@@ -8,11 +8,18 @@ files['app.py'] = r"""from flask import Flask, render_template, request, redirec
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pandas as pd
 import io
 import os
 import logging
+
+PHT = timezone(timedelta(hours=8))
+
+def to_pht(dt):
+    if dt is None:
+        return None
+    return dt.replace(tzinfo=timezone.utc).astimezone(PHT)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'feedback-secret-key-change-in-production')
@@ -46,6 +53,13 @@ if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
 login_manager = LoginManager(app)
 login_manager.login_view = 'nlcf_login'
 login_manager.login_message_category = 'info'
+
+
+@app.template_filter('pht')
+def pht_format(dt, fmt='%b %d, %Y %I:%M %p'):
+    if dt is None:
+        return ''
+    return to_pht(dt).strftime(fmt)
 
 
 class Admin(UserMixin, db.Model):
@@ -312,7 +326,7 @@ def get_feedback(id):
         'connected_to_nlcf': fb.connected_to_nlcf, 'attend_future': fb.attend_future,
         'future_topics': fb.future_topics, 'testimony': fb.testimony,
         'final_comments': fb.final_comments,
-        'submission_date': fb.submission_date.strftime('%b %d, %Y %I:%M %p') if fb.submission_date else ''
+        'submission_date': to_pht(fb.submission_date).strftime('%b %d, %Y %I:%M %p') if fb.submission_date else ''
     })
 
 
@@ -363,7 +377,7 @@ def export():
                 'Future Topics': fb.future_topics or '',
                 'Testimony': fb.testimony or '',
                 'Final Comments': fb.final_comments or '',
-                'Submission Date': fb.submission_date.strftime('%Y-%m-%d %H:%M:%S') if fb.submission_date else ''
+                'Submission Date': to_pht(fb.submission_date).strftime('%Y-%m-%d %H:%M:%S') if fb.submission_date else ''
             })
         df = pd.DataFrame(data)
         output = io.BytesIO()
@@ -374,7 +388,7 @@ def export():
             output,
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             as_attachment=True,
-            download_name=f'feedback_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+            download_name=f'feedback_{datetime.now(PHT).strftime("%Y%m%d_%H%M%S")}.xlsx'
         )
     except Exception as e:
         logging.error(f'Export error: {str(e)}')
@@ -384,7 +398,7 @@ def export():
 
 @app.route('/health')
 def health():
-    return jsonify({'status': 'ok', 'timestamp': datetime.utcnow().isoformat(), 'version': 1})
+    return jsonify({'status': 'ok', 'timestamp': datetime.now(PHT).isoformat(), 'version': 1})
 
 
 @app.after_request
@@ -1431,8 +1445,8 @@ files['templates/admin.html'] = """{% extends "base.html" %}
                             </div>
                         </td>
                         <td>
-                            <div style="font-size:0.85rem;font-weight:600;">{{ fb.submission_date.strftime('%b %d, %Y') }}</div>
-                            <div style="font-size:0.75rem;color:var(--text-muted);">{{ fb.submission_date.strftime('%I:%M %p') }}</div>
+                            <div style="font-size:0.85rem;font-weight:600;">{{ fb.submission_date|pht('%b %d, %Y') }}</div>
+                            <div style="font-size:0.75rem;color:var(--text-muted);">{{ fb.submission_date|pht('%I:%M %p') }}</div>
                         </td>
                         <td>
                             <div class="d-flex gap-1" style="justify-content:center;">

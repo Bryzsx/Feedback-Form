@@ -298,8 +298,8 @@
                             </div>
                         </td>
                         <td>
-                            <div style="font-size:0.85rem;font-weight:600;">{{ fb.submission_date.strftime('%b %d, %Y') }}</div>
-                            <div style="font-size:0.75rem;color:var(--text-muted);">{{ fb.submission_date.strftime('%I:%M %p') }}</div>
+                            <div style="font-size:0.85rem;font-weight:600;">{{ fb.submission_date|pht('%b %d, %Y') }}</div>
+                            <div style="font-size:0.75rem;color:var(--text-muted);">{{ fb.submission_date|pht('%I:%M %p') }}</div>
                         </td>
                         <td>
                             <div class="d-flex gap-1" style="justify-content:center;">
